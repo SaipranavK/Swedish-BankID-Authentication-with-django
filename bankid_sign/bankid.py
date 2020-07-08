@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 CONFIGS = {
     'prod': {
         'mobileBankIdPolicy': '1.2.752.78.1.5',
-        'bankIdUrl': 'https://appapi2.bankid.com/rp/v5',
+        'bankIdUrl': 'https://appapi2.bankid.com/rp/v5.1',
         'pfx': 'YOUR PRODUCTION CERT INFO GOES HERE',
         'passphrase': 'YOUR PRODUCTION CERT INFO GOES HERE',
         'ca': './cert/test.ca'

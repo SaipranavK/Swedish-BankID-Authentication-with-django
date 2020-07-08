@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <h1>BankID Test</h1>
+    <hr>
+    Oops! Something went wrong. Please try again
+    <br><br>
+    <a href="{% url 'bankid_sign:auth-root'%}" class="btn btn-success btn-sm">Retry</a>
+
+{% endblock %}
