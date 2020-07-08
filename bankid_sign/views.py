@@ -19,8 +19,9 @@ def auth_root(request):
         ua_string = request.META['HTTP_USER_AGENT']
         user_agent = parse(ua_string)
         if user_agent.is_pc:
-            #return redirect("bankid_sign:auth-root-pc")
-            return redirect("bankid_sign:auth-root-mobile")
+            return redirect("bankid_sign:auth-root-pc")
+            # for testing
+            # return redirect("bankid_sign:auth-root-mobile")
 
         else:
             return redirect("bankid_sign:auth-root-mobile")
