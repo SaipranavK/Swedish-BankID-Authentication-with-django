@@ -4,14 +4,32 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout
 
 from .models import Profile
+from .forms import MobileAuthForm
 from .bankid import *
 
 import time
 import hmac
 import qrcode
 import hashlib
+from user_agents import parse
 
 def auth_root(request):
+    if request.META['HTTP_USER_AGENT']:
+
+        ua_string = request.META['HTTP_USER_AGENT']
+        user_agent = parse(ua_string)
+        if user_agent.is_pc:
+            #return redirect("bankid_sign:auth-root-pc")
+            return redirect("bankid_sign:auth-root-mobile")
+
+        else:
+            return redirect("bankid_sign:auth-root-mobile")
+
+    else:
+        return HttpResponse(status = 404)
+
+
+def auth_root_pc(request):
     if request.user.is_authenticated:
         return render(request,'bankid_sign/authSuccess.html')
     
@@ -20,13 +38,12 @@ def auth_root(request):
         end_user_ip = x_forwarded_for.split(',')[0]
     else:
         end_user_ip = request.META.get('REMOTE_ADDR')
+    
+    rp_response = auth(end_user_ip)
 
-    pnr = "199803093179"
-    text = "Test Signing to verify user"
-    rp_response = auth(pnr, end_user_ip)
+    order_ref = rp_response['orderRef']
 
     auto_start_token = rp_response['autoStartToken']
-    order_ref = rp_response['orderRef']
     qr_data = "bankid:///?autostarttoken="+auto_start_token
 
     img = qrcode.make(qr_data) 
@@ -34,7 +51,46 @@ def auth_root(request):
     with open('static/auth-qr/qr.png', 'wb') as f:
         img.save(f)
 
-    return render(request, "bankid_sign/auth_root.html", {"order_ref":order_ref})
+    context = {
+        "order_ref":order_ref
+    }
+
+    return render(request, "bankid_sign/auth_root_pc.html", context)
+
+def auth_root_mobile(request):
+    if request.user.is_authenticated:
+        return render(request,'bankid_sign/authSuccess.html')
+    
+    if request.method == "POST":
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            end_user_ip = x_forwarded_for.split(',')[0]
+        else:
+            end_user_ip = request.META.get('REMOTE_ADDR')
+        
+        mobileAuthForm = MobileAuthForm(request.POST)
+
+        if mobileAuthForm.is_valid():
+            pnr = mobileAuthForm.cleaned_data['pnr']
+
+            rp_response = auth(end_user_ip, pnr = pnr)
+
+            order_ref = rp_response['orderRef']
+
+            context = {
+                "order_ref":order_ref
+            }
+
+            return render(request, "bankid_sign/auth_root_mobile_status.html", context)
+ 
+    else:
+        mobileAuthForm = MobileAuthForm()
+
+    context = {
+        'mobileAuthForm': mobileAuthForm,
+    }
+
+    return render(request, "bankid_sign/auth_root_mobile.html", context)
 
 def collect_status(request, order_ref):
     rp_response = collect(order_ref)
@@ -61,7 +117,6 @@ def collect_status(request, order_ref):
 
 def auth_home(request):
     return render(request,'bankid_sign/authSuccess.html')
-
 
 def auth_failed(request):
     return render(request,'bankid_sign/authFailed.html')

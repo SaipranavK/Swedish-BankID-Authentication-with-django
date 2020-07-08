@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <h1>BankID Test</h1>
+    <hr>
+    Open bankID app and Authenticate yourself.
+    <br><br>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script>
+        $( document ).ready(function() {
+            setInterval(function(){
+                $.ajax({
+                    url:"{% url 'bankid_sign:collect-status' order_ref %}",
+                    type: "GET",
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function(data, textStatus, xhr) {
+                        if(xhr.status == 202){
+                            window.location.href = "{% url 'bankid_sign:auth-home' %}"
+                        }
+                        else if(xhr.status == 201){
+                            console.log("Awating confirmation from bankID")
+                        }
+                        else if(xhr.status == 205){
+                            console.log("Order Failed")
+                            window.location.href = "{% url 'bankid_sign:auth-failed' %}"
+                        }
+                    }
+                });
+            },1500);
+        });
+    </script>
+
+{% endblock %}
