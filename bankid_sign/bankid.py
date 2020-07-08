@@ -68,18 +68,27 @@ def call(method, params):
 
     return r.json()
 
-def auth(pnr, end_user_ip, other_device = True) :
+def auth(end_user_ip, pnr = None, other_device = True) :
     requirement = {
         'allowFingerprint': True,
     }
+
     if other_device:
         requirement['certificatePolicies'] = [config['mobileBankIdPolicy']]
 
-    return call('auth', {
-        'endUserIp': end_user_ip,
-        #'personalNumber': pnr,
-        'requirement': requirement
-    })
+    if pnr:
+        return call('auth', {
+            'personalNumber': pnr,
+            'endUserIp': end_user_ip,
+            'requirement': requirement
+        })
+
+    else:
+        return call('auth', {
+            
+            'endUserIp': end_user_ip,
+            'requirement': requirement
+        })
 
 def sign(pnr, end_user_ip, text, other_device = False, tokenStartRequired = False):
     requirement = {
