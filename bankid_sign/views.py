@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout
@@ -48,13 +49,22 @@ def collect_status(request, order_ref):
             user = User.objects.create(username = pnr, first_name = first_name, last_name = last_name)
             Profile.objects.create(user = user, is_verified = True)
             
-    login(request, user)
-    context = {
-        #'rp_response':rp_response,
-        #'user': user,
-    }
+        login(request, user)
+    
+        return HttpResponse(status = 202)
 
-    return render(request,'bankid_sign/authSuccess.html', context)
+    elif rp_response['status'] == "pending":
+        return HttpResponse(status = 201)
+    
+    elif rp_response['status'] == "failed":
+        return HttpResponse(status = 205)
+
+def auth_home(request):
+    return render(request,'bankid_sign/authSuccess.html')
+
+
+def auth_failed(request):
+    return render(request,'bankid_sign/authFailed.html')
 
 def auth_logout(request):
     logout(request)
