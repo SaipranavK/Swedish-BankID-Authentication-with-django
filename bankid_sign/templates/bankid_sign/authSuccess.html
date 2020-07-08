@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <h1>BankID Test</h1>
+    <hr>
+    Authentication Successful
+    <br><br>
+    <b>Name:</b> {{request.user.first_name}} {{user.last_name}}<br>
+    <b>PNR:</b> {{request.user.username}}<br>
+    <b>Verified:</b> {{request.user.profile.is_verified}}
+    <br><br>
+    <a href="{% url 'bankid_sign:auth-logout' %}" class="btn btn-danger btn-sm">Logout</a>
+{% endblock %}

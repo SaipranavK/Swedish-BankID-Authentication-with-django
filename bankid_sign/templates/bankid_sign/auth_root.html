@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <h1>BankID Test</h1>
+    <hr>
+    Open bankID app and Authenticate yourself. Press done once completed
+    <br><br>
+    
+    <img src="{% static 'auth-qr/qr.png' %}" />
+    <br><br>
+    <a href="{% url 'bankid_sign:collect-status' order_ref %}" class="btn btn-success btn-sm">Done</a>
+{% endblock %}
