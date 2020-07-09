@@ -6,12 +6,13 @@
     Open bankID app and Authenticate yourself. Press done once completed
     <br><br>
     
-    <img src="{% static 'auth-qr/qr.png' %}" />
+    <img src="{{img_src}}" />
     <br><br>
     
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script>
         $( document ).ready(function() {
+            var img_src = "{{img_src}}"
             setInterval(function(){
                 $.ajax({
                     url:"{% url 'bankid_sign:collect-status' order_ref %}",
