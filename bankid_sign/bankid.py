@@ -21,7 +21,7 @@ CONFIGS = {
     'test': {
         'mobileBankIdPolicy': '1.2.3.4.25',
         'bankIdUrl': 'https://appapi2.test.bankid.com/rp/v5.1',
-        'pfx': './cert/FPTestcert2_20150818_102329.pfx',
+        'pfx': './cert/FPTestcert3_20200618.p12',
         'passphrase': 'qwerty123',
         'ca': './cert/test.ca'
     }
